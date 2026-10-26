@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7f3">
+    <meta name="description" content="Connectez-vous à votre espace de formation.">
+    <title>Connexion — Forma</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #202b24;
+            --muted: #6d786f;
+            --green: #276449;
+            --green-dark: #1d5038;
+            --paper: #f5f7f3;
+            --line: #dfe5dc;
+            --white: #fff;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            margin: 0;
+            padding: 28px 18px;
+            background:
+                radial-gradient(ellipse at 15% 15%, rgba(217, 232, 203, .55), transparent 34%),
+                radial-gradient(ellipse at 88% 88%, rgba(225, 235, 214, .55), transparent 35%),
+                var(--paper);
+            color: var(--ink);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .login-card {
+            width: min(100%, 420px);
+            padding: 42px;
+            border: 1px solid rgba(32, 43, 36, .08);
+            border-radius: 16px;
+            background: var(--white);
+            box-shadow: 0 22px 70px rgba(36, 54, 41, .09);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 37px;
+            color: var(--ink);
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -.06em;
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: var(--green);
+            color: #e4f1c4;
+            font-size: 1rem;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 1.9rem;
+            font-weight: 680;
+            letter-spacing: -.06em;
+            line-height: 1.2;
+        }
+
+        .intro {
+            margin: 0 0 29px;
+            color: var(--muted);
+            font-size: .94rem;
+        }
+
+        .field { margin-bottom: 19px; }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: .87rem;
+            font-weight: 650;
+        }
+
+        input {
+            width: 100%;
+            height: 48px;
+            padding: 0 13px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: var(--white);
+            color: var(--ink);
+            font: inherit;
+            font-size: .93rem;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+
+        input::placeholder { color: #9aa39b; }
+
+        input:focus {
+            border-color: var(--green);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(39, 100, 73, .12);
+        }
+
+        .submit {
+            width: 100%;
+            min-height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            margin-top: 7px;
+            border: 0;
+            border-radius: 7px;
+            background: var(--green);
+            color: var(--white);
+            cursor: pointer;
+            font: inherit;
+            font-size: .94rem;
+            font-weight: 650;
+            transition: background .2s ease;
+        }
+
+        .submit:hover { background: var(--green-dark); }
+
+        .submit:focus-visible {
+            outline: 3px solid #84a849;
+            outline-offset: 3px;
+        }
+
+        .message {
+            min-height: 1.5em;
+            margin: 15px 0 0;
+            color: #a12626;
+            font-size: .86rem;
+            text-align: center;
+        }
+
+        .message:empty { display: none; }
+
+        .message.success { color: var(--green); }
+
+        .footer {
+            margin: 25px 0 0;
+            color: var(--muted);
+            font-size: .8rem;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--green);
+            font-weight: 650;
+            text-decoration: none;
+        }
+
+        .footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 480px) {
+            .login-card { padding: 32px 24px; }
+            .brand { margin-bottom: 31px; }
+        }
+    </style>
+</head>
+<body>
+<main class="login-card">
+    // Logo
+    <a class="brand" href="/" aria-label="Forma, accueil">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span>Forma</span>
+    </a>
+    <h1>Connexion</h1>
+    <p class="intro">Connectez-vous pour accéder à votre espace.</p>
+
+    // Formulaire de connexion avec identifiant et mot de passe
+    <form id="login-form">
+        <div class="field">
+            <label for="username">Identifiant</label>
+            <input id="username" name="username" type="text" autocomplete="username" placeholder="Votre identifiant" required>
+        </div>
+        <div class="field">
+            <label for="password">Mot de passe</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Votre mot de passe" required>
+        </div>
+        <button class="submit" type="submit">Se connecter <span aria-hidden="true">→</span></button>
+    </form>
+
+    // Message d'état de la connexion et lien vers la page d'inscription
+    <p class="message" id="login-message" role="status" aria-live="polite"></p>
+    <p class="footer"><a href="/inscription.html">Pas de compte ? Créer un compte</a></p>
+</main>
+<script>
+    const loginForm = document.querySelector("#login-form");
+    const loginMessage = document.querySelector("#login-message");
+    const submitButton = loginForm.querySelector("button[type='submit']");
+
+    // Gestion de la soumission du formulaire de connexion : envoi des données et traitement de la réponse
+    loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        loginMessage.textContent = "";
+        loginMessage.classList.remove("success");
+        submitButton.disabled = true;
+
+        try {
+            const csrfResponse = await fetch("/api/csrf", { cache: "no-store" });
+            if (!csrfResponse.ok) throw new Error("Impossible de sécuriser la connexion.");
+            const csrf = await csrfResponse.json();
+            const response = await fetch("/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrf.token
+                },
+                body: JSON.stringify({
+                    login: loginForm.elements.username.value,
+                    password: loginForm.elements.password.value
+                })
+            });
+            const result = await response.json();
+            loginMessage.textContent = result.message;
+            loginMessage.classList.toggle("success", response.ok);
+            if (response.ok) {
+                window.location.assign("/employe.html");
+            }
+        } catch {
+            loginMessage.textContent = "Impossible de contacter le serveur. Réessayez plus tard.";
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

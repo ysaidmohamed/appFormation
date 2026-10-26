@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7f3">
+    <meta name="description" content="Consultez les formations et vos inscriptions Forma.">
+    <title>Mon espace — Forma</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #202b24;
+            --muted: #6d786f;
+            --green: #276449;
+            --green-dark: #1d5038;
+            --paper: #f5f7f3;
+            --line: #dfe5dc;
+            --white: #fff;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px clamp(16px, 4vw, 56px) 48px;
+            background:
+                radial-gradient(ellipse at 15% 5%, rgba(217, 232, 203, .5), transparent 34%),
+                var(--paper);
+            color: var(--ink);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .page { width: min(100%, 1240px); margin: 0 auto; }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 32px;
+            color: var(--ink);
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -.06em;
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: var(--green);
+            color: #e4f1c4;
+            font-size: 1rem;
+        }
+
+        h1, h2 { letter-spacing: -.045em; }
+        h1 { margin: 0 0 8px; font-size: clamp(1.8rem, 4vw, 2.4rem); }
+        h2 { margin: 0 0 16px; font-size: 1.35rem; }
+        .intro { margin: 0 0 28px; color: var(--muted); }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .header-actions { display: flex; gap: 10px; }
+
+        .refresh {
+            padding: 9px 13px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: var(--white);
+            color: var(--green);
+            cursor: pointer;
+            font: inherit;
+            font-size: .86rem;
+            font-weight: 650;
+            white-space: nowrap;
+        }
+
+        .refresh:hover { border-color: var(--green); }
+        .refresh:disabled { cursor: wait; opacity: .65; }
+        .logout {
+            padding: 9px 13px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: var(--white);
+            color: #a12626;
+            cursor: pointer;
+            font: inherit;
+            font-size: .86rem;
+            font-weight: 650;
+            white-space: nowrap;
+        }
+        .logout:hover { border-color: #a12626; }
+        .logout:disabled { cursor: wait; opacity: .65; }
+
+        .section {
+            margin-top: 24px;
+            padding: clamp(18px, 3vw, 28px);
+            border: 1px solid rgba(32, 43, 36, .08);
+            border-radius: 14px;
+            background: var(--white);
+            box-shadow: 0 14px 44px rgba(36, 54, 41, .06);
+        }
+
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 13px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+        th { color: var(--muted); font-size: .78rem; font-weight: 700; }
+        td { font-size: .9rem; }
+        tbody tr:last-child td { border-bottom: 0; }
+
+        .enroll {
+            padding: 8px 12px;
+            border: 0;
+            border-radius: 7px;
+            background: var(--green);
+            color: var(--white);
+            cursor: pointer;
+            font: inherit;
+            font-size: .84rem;
+            font-weight: 650;
+            white-space: nowrap;
+        }
+
+        .enroll:hover { background: var(--green-dark); }
+        .enroll:disabled { cursor: wait; opacity: .65; }
+        .unenroll {
+            padding: 8px 12px;
+            border: 1px solid #a12626;
+            border-radius: 7px;
+            background: var(--white);
+            color: #a12626;
+            cursor: pointer;
+            font: inherit;
+            font-size: .84rem;
+            font-weight: 650;
+            white-space: nowrap;
+        }
+        .unenroll:hover { background: #fff4f2; }
+        .unenroll:disabled { cursor: wait; opacity: .65; }
+        .status { min-height: 1.5em; margin: 18px 0 0; color: var(--muted); }
+        .status.error { color: #a12626; }
+        .status.success { color: var(--green); }
+        .empty { color: var(--muted); text-align: center; }
+        .admin-panel[hidden] { display: none; }
+        .admin-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+        .admin-card {
+            min-width: 0;
+            padding: 20px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #fcfdfb;
+        }
+        .admin-card h3 { margin: 0 0 14px; font-size: 1.05rem; letter-spacing: -.025em; }
+        .admin-card + .admin-card { margin-top: 0; }
+        .admin-card-wide { grid-column: 1 / -1; }
+        .admin-form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .admin-form label { display: grid; gap: 5px; color: var(--muted); font-size: .8rem; font-weight: 650; }
+        .admin-form [hidden] { display: none; }
+        .admin-form input, .admin-form select, .comment-input {
+            width: 100%;
+            min-width: 0;
+            min-height: 40px;
+            padding: 7px 9px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--white);
+            color: var(--ink);
+            font: inherit;
+            font-size: .86rem;
+        }
+        .admin-form input:focus, .admin-form select:focus, .comment-input:focus {
+            border-color: var(--green);
+            outline: 2px solid rgba(39, 100, 73, .12);
+        }
+        .admin-form button, .admin-action {
+            min-height: 38px;
+            padding: 7px 11px;
+            border: 0;
+            border-radius: 6px;
+            background: var(--green);
+            color: var(--white);
+            cursor: pointer;
+            font: inherit;
+            font-size: .82rem;
+            font-weight: 650;
+        }
+        .admin-form button { align-self: end; }
+        .admin-form button:hover, .admin-action:hover { background: var(--green-dark); }
+        .admin-action.secondary { border: 1px solid var(--line); background: var(--white); color: var(--ink); }
+        .admin-action.secondary:hover { border-color: var(--green); color: var(--green); }
+        .admin-action.danger { border: 1px solid #a12626; background: var(--white); color: #a12626; }
+        .admin-action.danger:hover { background: #fff4f2; }
+        .admin-form button:disabled, .admin-action:disabled { cursor: wait; opacity: .55; }
+        .row-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+        .comment-input { min-width: 150px; }
+        .admin-note { margin: 0 0 14px; color: var(--muted); font-size: .82rem; }
+        .disclosure {
+            width: 28px;
+            height: 28px;
+            margin-right: 5px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--white);
+            color: var(--green);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+        }
+        .accepted-details td { background: #f8faf6; }
+        .accepted-list { display: grid; gap: 10px; }
+        .accepted-list ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+        .accepted-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .accepted-list p { margin: 0; color: var(--muted); }
+
+        @media (max-width: 720px) {
+            th, td { padding: 11px 9px; }
+            .admin-grid { grid-template-columns: 1fr; }
+            .admin-card-wide { grid-column: auto; }
+        }
+
+        @media (max-width: 520px) {
+            .page-header { align-items: flex-start; flex-direction: column; }
+            .header-actions { width: 100%; }
+            .admin-form { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<main class="page">
+    // Logo et lien vers la page d'accueil de l'espace employé
+    <a class="brand" href="/employe.html" aria-label="Forma, mon espace">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span>Forma</span>
+    </a>
+    // Message de bienvenue et boutons d'action pour actualiser et se déconnecter
+    <header class="page-header">
+        <h1>Bonjour <span id="employee-name">employé</span></h1>
+        <div class="header-actions">
+            <button class="refresh" id="refresh-button" type="button">Actualiser</button>
+            <button class="logout" id="logout-button" type="button">Se déconnecter</button>
+        </div>
+    </header>
+    <p class="intro">Découvrez les formations disponibles et suivez vos inscriptions.</p>
+
+    // Section d'administration pour les utilisateurs ayant des privilèges d'administrateur
+    <section class="section admin-panel" id="admin-panel" aria-labelledby="admin-heading" hidden>
+        <h2 id="admin-heading">Administration</h2>
+        <p class="admin-note">Gérez les formations, les inscriptions, les employés et leurs services.</p>
+        <div class="admin-grid">
+            <section class="admin-card admin-card-wide" aria-labelledby="admin-trainings-heading">
+                // Gestion des formations : ajout, suppression et consultation des inscrits acceptés
+                <h3 id="admin-trainings-heading">Formations</h3>
+                <form class="admin-form" id="training-form">
+                    <label>Description (50 caractères max.)
+                        <input name="description" maxlength="50" required>
+                    </label>
+                    <label>Date de début
+                        <input name="dateDebut" type="date" required>
+                    </label>
+                    <label>Nombre d'heures
+                        <input name="nbreHeures" type="number" min="1" required>
+                    </label>
+                    <label>Département (50 caractères max.)
+                        <input name="departement" maxlength="50" required>
+                    </label>
+                    <label>Produit
+                        <select name="produitId" required></select>
+                    </label>
+                    <label>Inscrits minimum
+                        <input name="minInscrits" type="number" min="0" required>
+                    </label>
+                    <button type="submit">Ajouter la formation</button>
+                </form>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>Formation</th><th>Date</th><th>Produit</th><th>Acceptés / en cours</th><th>Action</th>
+                        </tr></thead>
+                        <tbody id="admin-trainings"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            // Gestion des inscriptions en cours : consultation et traitement (acceptation ou refus)
+            <section class="admin-card admin-card-wide" aria-labelledby="admin-enrollments-heading">
+                <h3 id="admin-enrollments-heading">Inscriptions en cours</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>Employé</th><th>Formation</th><th>Commentaire</th><th>Décision</th>
+                        </tr></thead>
+                        <tbody id="admin-enrollments"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            // Gestion des employés et administrateurs : consultation et modification du statut
+            <section class="admin-card admin-card-wide" aria-labelledby="admin-employees-heading">
+                <h3 id="admin-employees-heading">Employés et administrateurs</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>Employé</th><th>Identifiant</th><th>Statut</th><th>Action</th>
+                        </tr></thead>
+                        <tbody id="admin-employees"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            // Gestion des services : ajout, consultation et suppression
+            <section class="admin-card" aria-labelledby="admin-services-heading">
+                <h3 id="admin-services-heading">Ajouter un service</h3>
+                <form class="admin-form" id="service-form">
+                    <label>Nom du service
+                        <input name="nom" maxlength="55" required>
+                    </label>
+                    <button type="submit">Ajouter le service</button>
+                </form>
+                <h3>Services existants</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Service</th><th>Action</th></tr></thead>
+                        <tbody id="admin-services"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            // Affectation d'un employé existant à un service et produit dédié : formulaire de sélection et ajout
+            <section class="admin-card" aria-labelledby="admin-create-employee-heading">
+                <h3 id="admin-create-employee-heading">Affecter un employé existant</h3>
+                <form class="admin-form" id="employee-form">
+                    <label>Employé
+                        <select name="employeId" required></select>
+                    </label>
+                    <label>Service
+                        <select name="service" required></select>
+                    </label>
+                    <label>Produit dédié
+                        <select name="produitId" required></select>
+                    </label>
+                    <button type="submit">Ajouter au service</button>
+                </form>
+            </section>
+
+            // Consultation des services, employés et produits dédiés : tableau récapitulatif
+            <section class="admin-card admin-card-wide" aria-labelledby="admin-assignments-heading">
+                <h3 id="admin-assignments-heading">Services, employés et produits dédiés</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>Service</th><th>Employé</th><th>Produit dédié</th><th>Action</th>
+                        </tr></thead>
+                        <tbody id="admin-assignments"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    // Liste des formations ouvertes aux inscriptions et le tableau des inscriptions de l'employé connecté
+    <section class="section" aria-labelledby="available-heading">
+        <h2 id="available-heading">Formations ouvertes aux inscriptions</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Date de début</th>
+                    <th>Nombre d'heures</th>
+                    <th>Département</th>
+                    <th>Produit</th>
+                    <th>Inscrits minimum</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody id="available-trainings">
+                <tr><td class="empty" colspan="7">Chargement des formations…</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section" aria-labelledby="enrollments-heading">
+        <h2 id="enrollments-heading">Mes inscriptions</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Formation</th>
+                    <th>Statut</th>
+                    <th>Commentaire</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody id="employee-enrollments">
+                <tr><td class="empty" colspan="4">Chargement des inscriptions…</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <p class="status" id="page-message" role="status" aria-live="polite"></p>
+</main>
+<script>
+    const availableBody = document.querySelector("#available-trainings");
+    const enrollmentsBody = document.querySelector("#employee-enrollments");
+    const pageMessage = document.querySelector("#page-message");
+    const refreshButton = document.querySelector("#refresh-button");
+    const logoutButton = document.querySelector("#logout-button");
+    const adminPanel = document.querySelector("#admin-panel");
+    let dashboardLoading = false;
+    let csrfToken = "";
+
+    // Créer une cellule de tableau avec une valeur et une classe optionnelle
+    function makeCell(value, className) {
+        const cell = document.createElement("td");
+        cell.textContent = value ?? "";
+        if (className) cell.className = className;
+        return cell;
+    }
+
+    // Afficher une ligne vide avec un message dans le corps du tableau
+    function showEmptyRow(body, columns, message) {
+        const row = document.createElement("tr");
+        const cell = makeCell(message, "empty");
+        cell.colSpan = columns;
+        row.append(cell);
+        body.replaceChildren(row);
+    }
+
+    // Remplir un élément select avec des options basées sur un tableau d'objets
+    function populateSelect(select, options, valueOf, labelOf, emptyLabel) {
+        const selectedValue = select.value;
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = emptyLabel;
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        select.replaceChildren(placeholder);
+        for (const option of options) {
+            const element = document.createElement("option");
+            element.value = valueOf(option);
+            element.textContent = labelOf(option);
+            select.append(element);
+        }
+        select.value = options.some(option => valueOf(option) === selectedValue) ? selectedValue : "";
+    }
+
+    // Rendre les données d'administration dans les tableaux correspondants et gérer les interactions
+    function renderAdmin(data) {
+        const adminTrainingsBody = document.querySelector("#admin-trainings");
+        adminTrainingsBody.replaceChildren();
+        if (!data.formations.length) {
+            showEmptyRow(adminTrainingsBody, 5, "Aucune formation.");
+        } else {
+            for (const training of data.formations) {
+                const row = document.createElement("tr");
+                const nameCell = makeCell("");
+                const disclosure = document.createElement("button");
+                disclosure.type = "button";
+                disclosure.className = "disclosure";
+                disclosure.textContent = "▸";
+                disclosure.setAttribute("aria-expanded", "false");
+                disclosure.setAttribute("aria-label", `Afficher les inscrits acceptés à ${training.description}`);
+                nameCell.append(disclosure, document.createTextNode(training.description));
+                row.append(
+                    nameCell,
+                    makeCell(training.dateDebut || ""),
+                    makeCell(training.produitLibelle || "—"),
+                    makeCell(`${training.nombreInscrits} (${training.inscritsAcceptes.length} accepté(s))`)
+                );
+                const actionCell = document.createElement("td");
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "admin-action danger";
+                button.textContent = "Supprimer";
+                button.disabled = training.nombreInscrits > 0;
+                button.title = button.disabled
+                    ? "Retirez les inscrits acceptés et traitez les inscriptions en cours avant de supprimer cette formation."
+                    : "Supprimer cette formation";
+                button.addEventListener("click", async () => {
+                    if (window.confirm("Supprimer cette formation ?")) {
+                        await adminMutation(`/api/employe/admin/formations/${training.id}`, "DELETE");
+                    }
+                });
+                actionCell.append(button);
+                row.append(actionCell);
+                adminTrainingsBody.append(row);
+
+                const detailsRow = document.createElement("tr");
+                detailsRow.className = "accepted-details";
+                detailsRow.hidden = true;
+                const detailsCell = document.createElement("td");
+                detailsCell.colSpan = 5;
+                const details = document.createElement("div");
+                details.className = "accepted-list";
+                if (!training.inscritsAcceptes.length) {
+                    const empty = document.createElement("p");
+                    empty.textContent = "Aucun inscrit accepté pour cette formation.";
+                    details.append(empty);
+                } else {
+                    const list = document.createElement("ul");
+                    for (const enrollment of training.inscritsAcceptes) {
+                        const item = document.createElement("li");
+                        const employeeName = document.createElement("span");
+                        employeeName.textContent = `${enrollment.employePrenom} ${enrollment.employeNom}`;
+                        const removeButton = document.createElement("button");
+                        removeButton.type = "button";
+                        removeButton.className = "admin-action danger";
+                        removeButton.textContent = "Retirer";
+                        removeButton.addEventListener("click", async () => {
+                            if (window.confirm(`Retirer ${enrollment.employePrenom} ${enrollment.employeNom} de cette formation ?`)) {
+                                await adminMutation(
+                                    `/api/employe/admin/formations/${training.id}/inscriptions/${enrollment.id}`,
+                                    "DELETE"
+                                );
+                            }
+                        });
+                        item.append(employeeName, removeButton);
+                        list.append(item);
+                    }
+                    details.append(list);
+                    const removeAllButton = document.createElement("button");
+                    removeAllButton.type = "button";
+                    removeAllButton.className = "admin-action danger";
+                    removeAllButton.textContent = "Retirer tous les inscrits acceptés";
+                    removeAllButton.addEventListener("click", async () => {
+                        if (window.confirm(`Retirer les ${training.inscritsAcceptes.length} inscrits acceptés de cette formation ?`)) {
+                            await adminMutation(
+                                `/api/employe/admin/formations/${training.id}/inscriptions-acceptees`,
+                                "DELETE"
+                            );
+                        }
+                    });
+                    details.append(removeAllButton);
+                }
+                detailsCell.append(details);
+                detailsRow.append(detailsCell);
+                adminTrainingsBody.append(detailsRow);
+                disclosure.addEventListener("click", () => {
+                    detailsRow.hidden = !detailsRow.hidden;
+                    disclosure.textContent = detailsRow.hidden ? "▸" : "▾";
+                    disclosure.setAttribute("aria-expanded", String(!detailsRow.hidden));
+                    disclosure.setAttribute(
+                        "aria-label",
+                        `${detailsRow.hidden ? "Afficher" : "Masquer"} les inscrits acceptés à ${training.description}`
+                    );
+                });
+            }
+        }
+
+        const adminEnrollmentsBody = document.querySelector("#admin-enrollments");
+        adminEnrollmentsBody.replaceChildren();
+        if (!data.inscriptionsEnCours.length) {
+            showEmptyRow(adminEnrollmentsBody, 4, "Aucune inscription à traiter.");
+        } else {
+            for (const enrollment of data.inscriptionsEnCours) {
+                const row = document.createElement("tr");
+                row.append(
+                    makeCell(`${enrollment.employePrenom} ${enrollment.employeNom}`),
+                    makeCell(enrollment.formationNom)
+                );
+                const commentCell = document.createElement("td");
+                const commentInput = document.createElement("input");
+                commentInput.className = "comment-input";
+                commentInput.maxLength = 60;
+                commentInput.value = enrollment.commentaire || "";
+                commentInput.placeholder = "Commentaire (facultatif)";
+                commentInput.setAttribute("aria-label", `Commentaire pour ${enrollment.employePrenom} ${enrollment.employeNom}`);
+                commentCell.append(commentInput);
+                row.append(commentCell);
+
+                const actionCell = document.createElement("td");
+                const actions = document.createElement("div");
+                actions.className = "row-actions";
+                for (const [status, label, style] of [
+                    ["Accepté", "Accepter", "admin-action"],
+                    ["Refusé", "Refuser", "admin-action danger"]
+                ]) {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = style;
+                    button.textContent = label;
+                    button.addEventListener("click", async () => {
+                        await adminMutation(`/api/employe/admin/inscriptions/${enrollment.id}`, "PATCH", {
+                            statut: status,
+                            commentaire: commentInput.value
+                        });
+                    });
+                    actions.append(button);
+                }
+                actionCell.append(actions);
+                row.append(actionCell);
+                adminEnrollmentsBody.append(row);
+            }
+        }
+
+        const employeesBody = document.querySelector("#admin-employees");
+        employeesBody.replaceChildren();
+        if (!data.employes.length) {
+            showEmptyRow(employeesBody, 4, "Aucun employé.");
+        } else {
+            for (const employee of data.employes) {
+                const row = document.createElement("tr");
+                row.append(
+                    makeCell(`${employee.prenom} ${employee.nom}`),
+                    makeCell(employee.login),
+                    makeCell(employee.statut === 1 ? "Administrateur" : "Employé")
+                );
+                const actionCell = document.createElement("td");
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "admin-action secondary";
+                button.textContent = employee.statut === 1 ? "Rendre employé" : "Rendre administrateur";
+                button.addEventListener("click", async () => {
+                    await adminMutation(`/api/employe/admin/employes/${employee.id}/statut`, "PATCH", {
+                        statut: employee.statut === 1 ? 0 : 1
+                    });
+                });
+                actionCell.append(button);
+                row.append(actionCell);
+                employeesBody.append(row);
+            }
+        }
+
+        const assignmentsBody = document.querySelector("#admin-assignments");
+        assignmentsBody.replaceChildren();
+        if (!data.affectations.length) {
+            showEmptyRow(assignmentsBody, 4, "Aucun service enregistré.");
+        } else {
+            for (const assignment of data.affectations) {
+                const row = document.createElement("tr");
+                row.append(
+                    makeCell(assignment.service),
+                    makeCell(assignment.employePrenom
+                        ? `${assignment.employePrenom} ${assignment.employeNom}`
+                        : "Aucun employé associé"),
+                    makeCell(assignment.produitLibelle || "—")
+                );
+                const actionCell = document.createElement("td");
+                if (assignment.employeId != null) {
+                    const removeButton = document.createElement("button");
+                    removeButton.type = "button";
+                    removeButton.className = "admin-action danger";
+                    removeButton.textContent = "Retirer l'association";
+                    removeButton.addEventListener("click", async () => {
+                        if (window.confirm(`Retirer ${assignment.employePrenom} ${assignment.employeNom} du service « ${assignment.service} » ?`)) {
+                            await adminMutation(`/api/employe/admin/affectations/${assignment.id}`, "DELETE");
+                        }
+                    });
+                    actionCell.append(removeButton);
+                } else {
+                    actionCell.textContent = "Place disponible";
+                }
+                row.append(actionCell);
+                assignmentsBody.append(row);
+            }
+        }
+
+        const productOptions = data.produits;
+        for (const select of document.querySelectorAll("#training-form select[name='produitId'], #employee-form select[name='produitId']")) {
+            populateSelect(select, productOptions, product => String(product.id), product => product.libelle, "Choisir un produit");
+        }
+        const serviceSelect = document.querySelector("#employee-form select[name='service']");
+        const selectedService = serviceSelect.value;
+        populateSelect(
+            serviceSelect,
+            data.services,
+            service => service.nom,
+            service => service.nom,
+            "Choisir un service"
+        );
+        serviceSelect.value = data.services.some(service => service.nom === selectedService) ? selectedService : "";
+        const employeeSelect = document.querySelector("#employee-form select[name='employeId']");
+        const selectedEmployee = employeeSelect.value;
+        populateSelect(
+            employeeSelect,
+            data.employes,
+            employee => String(employee.id),
+            employee => `${employee.prenom} ${employee.nom} (${employee.login})`,
+            "Choisir un employé"
+        );
+        employeeSelect.value = data.employes.some(employee => String(employee.id) === selectedEmployee)
+            ? selectedEmployee
+            : "";
+
+        const servicesBody = document.querySelector("#admin-services");
+        servicesBody.replaceChildren();
+        if (!data.services.length) {
+            showEmptyRow(servicesBody, 2, "Aucun service.");
+        } else {
+            for (const service of data.services) {
+                const row = document.createElement("tr");
+                row.append(makeCell(service.nom));
+                const actionCell = document.createElement("td");
+                const deleteButton = document.createElement("button");
+                deleteButton.type = "button";
+                deleteButton.className = "admin-action danger";
+                deleteButton.textContent = "Supprimer";
+                deleteButton.addEventListener("click", async () => {
+                    if (window.confirm(`Supprimer le service « ${service.nom} » ? Seuls les services sans employé affecté peuvent être supprimés.`)) {
+                        await adminMutation(
+                            `/api/employe/admin/services?nom=${encodeURIComponent(service.nom)}`,
+                            "DELETE"
+                        );
+                    }
+                });
+                actionCell.append(deleteButton);
+                row.append(actionCell);
+                servicesBody.append(row);
+            }
+        }
+    }
+
+    // Effectuer une requête d'administration avec gestion des erreurs et mise à jour de l'interface
+    async function adminMutation(url, method, body) {
+        pageMessage.textContent = "";
+        pageMessage.classList.remove("error", "success");
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                    ...(body ? { "Content-Type": "application/json" } : {})
+                },
+                ...(body ? { body: JSON.stringify(body) } : {})
+            });
+            const result = await response.json();
+            pageMessage.textContent = result.message || "L'action d'administration a échoué.";
+            pageMessage.classList.add(response.ok ? "success" : "error");
+            if (response.ok) await loadDashboard(true);
+            return response.ok;
+        } catch {
+            pageMessage.textContent = "Impossible de contacter le serveur. Réessayez plus tard.";
+            pageMessage.classList.add("error");
+            return false;
+        }
+    }
+
+    // Rendre les formations disponibles pour l'inscription dans le tableau correspondant
+    function renderTrainings(trainings) {
+        availableBody.replaceChildren();
+        if (!trainings.length) {
+            showEmptyRow(availableBody, 7, "Aucune formation disponible pour le moment.");
+            return;
+        }
+
+        for (const training of trainings) {
+            const row = document.createElement("tr");
+            row.append(
+                makeCell(training.description),
+                makeCell(training.dateDebut ?? ""),
+                makeCell(training.nbreHeures == null ? "" : String(training.nbreHeures)),
+                makeCell(training.departement),
+                makeCell(training.produitLibelle),
+                makeCell(training.minInscrits == null ? "" : String(training.minInscrits))
+            );
+            const actionCell = document.createElement("td");
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "enroll";
+            button.textContent = "S'inscrire";
+            button.addEventListener("click", () => enroll(training.id, button));
+            actionCell.append(button);
+            row.append(actionCell);
+            availableBody.append(row);
+        }
+    }
+
+    // Rendre les inscriptions de l'employé connecté dans le tableau correspondant, avec possibilité de désinscription si applicable
+    function renderEnrollments(enrollments) {
+        enrollmentsBody.replaceChildren();
+        if (!enrollments.length) {
+            showEmptyRow(enrollmentsBody, 4, "Vous n'avez pas encore d'inscription.");
+            return;
+        }
+
+        for (const enrollment of enrollments) {
+            const row = document.createElement("tr");
+            row.append(
+                makeCell(enrollment.formationNom),
+                makeCell(enrollment.statut),
+                makeCell(enrollment.commentaire || "Aucun commentaire")
+            );
+            const actionCell = document.createElement("td");
+            if (enrollment.annulable) {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "unenroll";
+                button.textContent = "Se désinscrire";
+                button.addEventListener("click", () => unenroll(enrollment.formationId, button));
+                actionCell.append(button);
+            } else {
+                actionCell.textContent = "Non annulable";
+            }
+            row.append(actionCell);
+            enrollmentsBody.append(row);
+        }
+    }
+    
+    // Charger le tableau de bord de l'employé avec les formations disponibles, les inscriptions et les données d'administration si applicable
+    async function loadDashboard(force = false) {
+        if (dashboardLoading) return;
+        if (!force && adminPanel.contains(document.activeElement)) return;
+        dashboardLoading = true;
+        refreshButton.disabled = true;
+        try {
+            const response = await fetch("/api/employe/accueil");
+            if (response.status === 401) {
+                pageMessage.textContent = "Votre session a expiré. Connectez-vous pour accéder à votre espace.";
+                pageMessage.classList.add("error");
+                showEmptyRow(availableBody, 7, "Connectez-vous pour consulter les formations.");
+                showEmptyRow(enrollmentsBody, 4, "Connectez-vous pour consulter vos inscriptions.");
+                return;
+            }
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.message || "Impossible de charger votre espace.");
+            }
+            csrfToken = result.csrfToken;
+            document.querySelector("#employee-name").textContent = result.prenomEmploye || "employé";
+            renderTrainings(result.formationsDisponibles);
+            renderEnrollments(result.inscriptions);
+            adminPanel.hidden = !result.administrateur;
+            if (result.administrateur && result.administration) {
+                renderAdmin(result.administration);
+            }
+        } catch {
+            pageMessage.textContent = "Impossible de charger votre espace. Réessayez plus tard.";
+            pageMessage.classList.add("error");
+        } finally {
+            dashboardLoading = false;
+            refreshButton.disabled = false;
+        }
+    }
+
+    // Envoyer une demande d'inscription à une formation et mettre à jour l'interface en conséquence
+    async function enroll(trainingId, button) {
+        pageMessage.textContent = "";
+        pageMessage.classList.remove("error", "success");
+        button.disabled = true;
+        try {
+            const response = await fetch(`/api/employe/formations/${trainingId}/inscription`, {
+                method: "POST",
+                headers: { "X-CSRF-TOKEN": csrfToken }
+            });
+            const result = await response.json();
+            pageMessage.textContent = result.message || "La demande d'inscription n'a pas abouti.";
+            pageMessage.classList.add(response.ok ? "success" : "error");
+            if (response.ok) await loadDashboard();
+        } catch {
+            pageMessage.textContent = "Impossible de contacter le serveur. Réessayez plus tard.";
+            pageMessage.classList.add("error");
+        } finally {
+            button.disabled = false;
+        }
+    }
+
+    // Envoyer une demande de désinscription d'une formation et mettre à jour l'interface en conséquence
+    async function unenroll(trainingId, button) {
+        pageMessage.textContent = "";
+        pageMessage.classList.remove("error", "success");
+        button.disabled = true;
+        try {
+            const response = await fetch(`/api/employe/formations/${trainingId}/inscription`, {
+                method: "DELETE",
+                headers: { "X-CSRF-TOKEN": csrfToken }
+            });
+            const result = await response.json();
+            pageMessage.textContent = result.message || "La désinscription n'a pas abouti.";
+            pageMessage.classList.add(response.ok ? "success" : "error");
+            if (response.ok) await loadDashboard();
+        } catch {
+            pageMessage.textContent = "Impossible de contacter le serveur. Réessayez plus tard.";
+            pageMessage.classList.add("error");
+        } finally {
+            button.disabled = false;
+        }
+    }
+
+    // Déconnecter l'utilisateur et rediriger vers la page d'accueil
+    async function logout() {
+        logoutButton.disabled = true;
+        try {
+            const response = await fetch("/api/logout", {
+                method: "POST",
+                headers: { "X-CSRF-TOKEN": csrfToken }
+            });
+            if (response.ok || response.status === 401) {
+                window.location.assign("/");
+                return;
+            }
+            const result = await response.json();
+            pageMessage.textContent = result.message || "La déconnexion a échoué.";
+            pageMessage.classList.add("error");
+        } catch {
+            pageMessage.textContent = "Impossible de contacter le serveur. Réessayez plus tard.";
+            pageMessage.classList.add("error");
+        } finally {
+            logoutButton.disabled = false;
+        }
+    }
+
+    // Gestion des formulaires d'administration : formations, services et affectations d'employés
+    document.querySelector("#training-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const values = new FormData(form);
+        const submitted = await adminMutation("/api/employe/admin/formations", "POST", {
+            description: values.get("description"),
+            dateDebut: values.get("dateDebut"),
+            nbreHeures: Number(values.get("nbreHeures")),
+            departement: values.get("departement"),
+            produitId: Number(values.get("produitId")),
+            minInscrits: Number(values.get("minInscrits"))
+        });
+        if (submitted) form.reset();
+    });
+
+    // Gestion du formulaire d'ajout de service : envoi des données et mise à jour de l'interface
+    document.querySelector("#service-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const submitted = await adminMutation("/api/employe/admin/services", "POST", {
+            nom: new FormData(form).get("nom")
+        });
+        if (submitted) form.reset();
+    });
+
+    // Gestion du formulaire d'affectation d'un employé à un service et produit dédié : envoi des données et mise à jour de l'interface
+    document.querySelector("#employee-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const values = new FormData(form);
+        const submitted = await adminMutation("/api/employe/admin/affectations", "POST", {
+            employeId: Number(values.get("employeId")),
+            service: values.get("service"),
+            produitId: Number(values.get("produitId"))
+        });
+        if (submitted) form.reset();
+    });
+
+    loadDashboard();
+    refreshButton.addEventListener("click", loadDashboard);
+    logoutButton.addEventListener("click", logout);
+    window.setInterval(loadDashboard, 15000);
+</script>
+</body>
+</html>
